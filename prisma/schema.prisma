@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model OriginalPerfume {
+  id          Int      @id @default(autoincrement())
+  name        String
+  brand       String
+  description String
+  notes       String
+  priceMin    Int
+  priceMax    Int
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  dupes       Dupe[]
+}
+
+model Dupe {
+  id              Int             @id @default(autoincrement())
+  name            String
+  brand           String
+  description     String
+  notes           String
+  priceMin        Int
+  priceMax        Int
+  imageUrl        String?
+  similarity      Int
+  whereToBuy      String
+  createdAt       DateTime        @default(now())
+  originalPerfume OriginalPerfume @relation(fields: [originalId], references: [id])
+  originalId      Int
+  reviews         Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
+  author    String
+  createdAt DateTime @default(now())
+  dupe      Dupe     @relation(fields: [dupeId], references: [id])
+  dupeId    Int
+}

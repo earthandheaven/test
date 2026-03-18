@@ -1,28 +1,14 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import PerfumeCard from "@/components/PerfumeCard";
+import { parfumData } from "@/lib/data";
 
 export const metadata = {
   title: "Semua Parfum - DupeFinder ID",
   description: "Daftar lengkap parfum original beserta rekomendasi dupe-nya.",
 };
 
-export default async function AllPerfumesPage() {
-  const parfums = await prisma.originalPerfume.findMany({
-    include: {
-      dupes: {
-        select: {
-          id: true,
-          name: true,
-          brand: true,
-          priceMin: true,
-          priceMax: true,
-          similarity: true,
-        },
-      },
-    },
-    orderBy: { brand: "asc" },
-  });
+export default function AllPerfumesPage() {
+  const totalDupes = parfumData.reduce((acc, p) => acc + p.dupes.length, 0);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -37,8 +23,7 @@ export default async function AllPerfumesPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Semua Parfum</h1>
           <p className="text-gray-500 mt-1">
-            {parfums.length} parfum original dengan{" "}
-            {parfums.reduce((acc, p) => acc + p.dupes.length, 0)} dupe
+            {parfumData.length} parfum original dengan {totalDupes} dupe
             tersedia
           </p>
         </div>
@@ -51,7 +36,7 @@ export default async function AllPerfumesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {parfums.map((parfum) => (
+        {parfumData.map((parfum) => (
           <PerfumeCard key={parfum.id} parfum={parfum} />
         ))}
       </div>

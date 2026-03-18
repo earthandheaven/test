@@ -1,8 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReviewForm from "@/components/ReviewForm";
+import { getParfumById, parfumData } from "@/lib/data";
 import StarRating from "@/components/StarRating";
+
+export async function generateStaticParams() {
+  return parfumData.map((p) => ({ id: String(p.id) }));
+}
 
 function formatRupiah(amount: number): string {
   return new Intl.NumberFormat("id-ID", {
@@ -35,20 +38,7 @@ export default async function ParfumDetailPage({
 
   if (isNaN(parfumId)) notFound();
 
-  const parfum = await prisma.originalPerfume.findUnique({
-    where: { id: parfumId },
-    include: {
-      dupes: {
-        include: {
-          reviews: {
-            orderBy: { createdAt: "desc" },
-          },
-        },
-        orderBy: { similarity: "desc" },
-      },
-    },
-  });
-
+  const parfum = getParfumById(parfumId);
   if (!parfum) notFound();
 
   const avgSavings =
@@ -60,6 +50,10 @@ export default async function ParfumDetailPage({
           ) / parfum.dupes.length
         )
       : 0;
+
+  const sortedDupes = [...parfum.dupes].sort(
+    (a, b) => b.similarity - a.similarity
+  );
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -125,13 +119,13 @@ export default async function ParfumDetailPage({
         🧴 Rekomendasi Dupe ({parfum.dupes.length})
       </h2>
 
-      {parfum.dupes.length === 0 ? (
+      {sortedDupes.length === 0 ? (
         <div className="bg-gray-50 rounded-2xl p-10 text-center text-gray-500">
           Belum ada dupe untuk parfum ini.
         </div>
       ) : (
         <div className="space-y-6">
-          {parfum.dupes.map((dupe, index) => {
+          {sortedDupes.map((dupe, index) => {
             const avgRating =
               dupe.reviews.length > 0
                 ? dupe.reviews.reduce((acc, r) => acc + r.rating, 0) /
@@ -181,9 +175,7 @@ export default async function ParfumDetailPage({
                   {/* Dupe Details */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-gray-50 rounded-xl p-4">
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">
-                        Harga Dupe
-                      </p>
+                      <p className="text-xs text-gray-400 mb-1">Harga Dupe</p>
                       <p className="font-semibold text-gray-800">
                         {formatRupiah(dupe.priceMin)} –{" "}
                         {formatRupiah(dupe.priceMax)}
@@ -194,10 +186,10 @@ export default async function ParfumDetailPage({
                       <p className="text-sm text-gray-700">{dupe.notes}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">
-                        Beli di mana
+                      <p className="text-xs text-gray-400 mb-1">Beli di mana</p>
+                      <p className="text-sm text-gray-700">
+                        {dupe.whereToBuy}
                       </p>
-                      <p className="text-sm text-gray-700">{dupe.whereToBuy}</p>
                     </div>
                   </div>
 
@@ -229,7 +221,7 @@ export default async function ParfumDetailPage({
                   </h4>
 
                   {dupe.reviews.length > 0 ? (
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-3">
                       {dupe.reviews.map((review) => (
                         <div
                           key={review.id}
@@ -248,12 +240,10 @@ export default async function ParfumDetailPage({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-400 mb-4">
-                      Belum ada ulasan. Jadilah yang pertama!
+                    <p className="text-sm text-gray-400">
+                      Belum ada ulasan.
                     </p>
                   )}
-
-                  <ReviewForm dupeId={dupe.id} />
                 </div>
               </div>
             );

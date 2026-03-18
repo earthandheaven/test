@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 import PerfumeCard from "@/components/PerfumeCard";
+import { searchParfum, getAllBrands, parfumData } from "@/lib/data";
 
 interface SearchParams {
   q?: string;
@@ -15,44 +15,9 @@ export default async function HomePage({
 }) {
   const { q = "", brand = "" } = await searchParams;
 
-  const parfums = await prisma.originalPerfume.findMany({
-    where: {
-      AND: [
-        q
-          ? {
-              OR: [
-                { name: { contains: q } },
-                { brand: { contains: q } },
-                { notes: { contains: q } },
-              ],
-            }
-          : {},
-        brand ? { brand: { contains: brand } } : {},
-      ],
-    },
-    include: {
-      dupes: {
-        select: {
-          id: true,
-          name: true,
-          brand: true,
-          priceMin: true,
-          priceMax: true,
-          similarity: true,
-        },
-      },
-    },
-    orderBy: { name: "asc" },
-  });
-
-  const allBrands = await prisma.originalPerfume.findMany({
-    select: { brand: true },
-    distinct: ["brand"],
-    orderBy: { brand: "asc" },
-  });
-
-  const totalParfum = await prisma.originalPerfume.count();
-  const totalDupes = await prisma.dupe.count();
+  const parfums = searchParfum(q, brand);
+  const allBrands = getAllBrands();
+  const totalDupes = parfumData.reduce((acc, p) => acc + p.dupes.length, 0);
 
   return (
     <div>
@@ -78,7 +43,7 @@ export default async function HomePage({
           <div className="flex flex-wrap justify-center gap-8 text-center text-sm text-gray-600">
             <div>
               <span className="font-bold text-rose-500 text-xl block">
-                {totalParfum}
+                {parfumData.length}
               </span>
               Parfum Original
             </div>
@@ -114,15 +79,15 @@ export default async function HomePage({
           </Link>
           {allBrands.map((b) => (
             <Link
-              key={b.brand}
-              href={`/?brand=${encodeURIComponent(b.brand)}${q ? `&q=${q}` : ""}`}
+              key={b}
+              href={`/?brand=${encodeURIComponent(b)}${q ? `&q=${q}` : ""}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                brand === b.brand
+                brand === b
                   ? "bg-rose-500 text-white"
                   : "bg-white text-gray-600 border border-gray-200 hover:border-rose-300"
               }`}
             >
-              {b.brand}
+              {b}
             </Link>
           ))}
         </div>

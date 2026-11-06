@@ -98,6 +98,14 @@ button.sm{padding:6px 10px;font-size:13px}
 .topic .t{display:flex;flex-direction:column;gap:6px;min-width:0}
 .topic .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .topic .why{font-size:13px;color:var(--muted)}
+.feeditem{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.feeditem:first-child{border-top:0}
+.feeditem input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent)}
+.feeditem .ft{font-weight:600;line-height:1.35}
+.feeditem .fm{grid-column:2;font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.feeditem .fm a{color:var(--accent)}
+.feeditem .fr{grid-column:2;font-size:13px;color:var(--muted)}
+.feedlist{max-height:420px;overflow-y:auto;margin-top:6px}
 .job{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
 .job:first-child{border-top:0}
 .job .st{font-family:var(--f-mono);font-size:12px;width:64px;flex:none}
@@ -232,6 +240,17 @@ button.sm{padding:6px 10px;font-size:13px}
       </div>
 
       <div class="stack">
+        <div class="panel" id="feedPanel">
+          <div class="row" style="justify-content:space-between">
+            <div style="min-width:0"><h2>Berita terbaru</h2><p class="note" id="feedNote" style="margin:2px 0 0">Diambil otomatis dari Google News dan Google Trends tiap 4 jam.</p></div>
+            <button class="primary sm" id="btnUseFeed" disabled>Pakai sebagai bahan</button>
+          </div>
+          <div class="tabs-sm" id="feedTabs" style="margin-top:10px">
+            <button data-f="acc" aria-pressed="true">Sesuai niche akun</button>
+            <button data-f="trend" aria-pressed="false">Trending Indonesia</button>
+          </div>
+          <div class="feedlist" id="feedList"></div>
+        </div>
         <div class="panel" id="topicPanel">
           <div class="row" style="justify-content:space-between">
             <h2>Topik</h2>
@@ -343,7 +362,9 @@ const S = {
   topics:[], jobs:[], ctls:[],
   open:null, slide:0, capTab:"instagram", tall:false,
   editingAcc:null,
+  feed:new Map(), niches:new Map(), feedTab:"acc", feedSel:new Set(),
 };
+let dbRef = null;
 let sample = null, downloads = null, col = null, mode = "local";
 
 /* ---------- helpers ---------- */
@@ -657,6 +678,7 @@ function renderProd(){
   accOptions(sel, false, cur);
   const none = S.accounts.size===0;
   $("#btnTopics").disabled = none || !sample;
+  renderFeed();
   $("#aiNote").innerHTML = none ? `Buat akun dulu di tab <a href="#akun">Akun</a>.` : (!sample ? "Claude belum tersambung di tampilan ini. Buka halaman ini di claude.ai untuk memakai fitur AI." : "Pertama kali dipakai, kamu akan diminta mengizinkan halaman ini memakai Claude dari akunmu.");
 }
 function renderTopics(){
@@ -675,6 +697,7 @@ function renderTopics(){
   updWriteBtn();
 }
 function updWriteBtn(){ const n = S.topics.filter(t=>t.on).length; $("#btnWrite").textContent = `Tulis & desain ${n} konten`; $("#btnWrite").disabled = !n || !!S.ctls.length; }
+$("#pAcc").addEventListener("change", ()=>{ S.feedSel.clear(); renderFeed(); });
 $("#topicList").addEventListener("input", e=>{ const i=+e.target.dataset.i; if (isNaN(i)) return; if (e.target.type==="checkbox") S.topics[i].on = e.target.checked; else S.topics[i][e.target.dataset.f] = e.target.value; updWriteBtn(); });
 $("#topicList").addEventListener("change", e=>{ if (e.target.type==="checkbox"){ S.topics[+e.target.dataset.i].on = e.target.checked; updWriteBtn(); }});
 $("#btnAllTopics").onclick = ()=>{ const all = S.topics.every(t=>t.on); S.topics.forEach(t=>t.on=!all); renderTopics(); };
@@ -1047,6 +1070,7 @@ function accForm(a){
           <label class="f">Username<input type="text" id="afHandle" value="${esc(d.handle)}" placeholder="kabarduit"></label>
           <label class="f">Niche<input type="text" id="afNiche" value="${esc(d.niche)}" placeholder="Finansial pribadi"></label>
           <label class="f">Audiens<input type="text" id="afAud" value="${esc(d.audience)}" placeholder="Pekerja 20-30 tahun di kota besar"></label>
+          <label class="f">Kata kunci berita <small>Pisahkan dengan koma, maks 4. Dipakai buat nyari berita.</small><input type="text" id="afKw" value="${esc(d.keywords||"")}" placeholder="gaji, harga emas, pinjol"></label>
           <label class="f">Gaya bahasa<input type="text" id="afTone" value="${esc(d.tone)}"></label>
           <label class="f">Bahasa<select id="afLang">${["Indonesia","Indonesia gaul (lo/gue)","Indonesia formal","English","Jawa campur Indonesia"].map(l=>`<option ${l===d.lang?"selected":""}>${l}</option>`).join("")}</select></label>
         </div>
@@ -1075,7 +1099,7 @@ function accForm(a){
       <div><div class="eyebrow" style="margin-bottom:8px">Pratinjau cover</div><canvas id="afPrev"></canvas></div>
     </div>`;
   const prev = ()=>{ const demo = {slides:[{judul: d.niche ? `Hal yang jarang dibahas soal ${d.niche.toLowerCase()}` : "Contoh judul cover yang bikin penasaran", isi:"Subjudul singkat buat ngejelasin isinya"},{judul:"",isi:""},{judul:"",isi:""}]}; fontsReady.then(()=>drawSlide($("#afPrev"), d, demo, 0, .3, false)); };
-  const read = ()=>{ d.name=$("#afName").value.trim(); d.handle=$("#afHandle").value.trim().replace(/^@/,""); d.niche=$("#afNiche").value.trim(); d.audience=$("#afAud").value.trim(); d.tone=$("#afTone").value.trim(); d.lang=$("#afLang").value; d.voice=$("#afVoice").value; d.palette={bg:$("#afBg").value, fg:$("#afFg").value, accent:$("#afAc").value}; d.platforms=$$("#afPlats input:checked").map(i=>i.value); d.slots=$("#afSlots").value; };
+  const read = ()=>{ d.name=$("#afName").value.trim(); d.handle=$("#afHandle").value.trim().replace(/^@/,""); d.niche=$("#afNiche").value.trim(); d.keywords=$("#afKw").value.trim(); d.audience=$("#afAud").value.trim(); d.tone=$("#afTone").value.trim(); d.lang=$("#afLang").value; d.voice=$("#afVoice").value; d.palette={bg:$("#afBg").value, fg:$("#afFg").value, accent:$("#afAc").value}; d.platforms=$$("#afPlats input:checked").map(i=>i.value); d.slots=$("#afSlots").value; };
   panel.oninput = ()=>{ read(); prev(); };
   $("#afTpl").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; d.template=b.dataset.t; $$("#afTpl button").forEach(x=>x.setAttribute("aria-pressed", x===b)); prev(); };
   $("#afPresets").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; const p=PALETTES[+b.dataset.p]; $("#afBg").value=p.bg; $("#afFg").value=p.fg; $("#afAc").value=p.accent; read(); prev(); };
@@ -1085,12 +1109,76 @@ function accForm(a){
     if (!d.name || !d.handle || !d.niche){ $("#afMsg").textContent = "Nama, username, dan niche wajib diisi."; return; }
     if (!d.platforms.length){ $("#afMsg").textContent = "Pilih minimal satu platform."; return; }
     d.example = false;
-    await save(d.id, d); panel.hidden = true; S.editingAcc = null; toast(isNew?"Akun dibuat":"Akun disimpan"); render();
+    await save(d.id, d); syncNiche(d); panel.hidden = true; S.editingAcc = null; toast(isNew?"Akun dibuat":"Akun disimpan"); render();
   };
   const del = $("#afDel");
-  if (del){ let armed=false; del.onclick = async ()=>{ if(!armed){ armed=true; del.textContent="Klik lagi untuk hapus (konten tetap ada)"; return; } await remove(d.id); panel.hidden=true; toast("Akun dihapus"); render(); }; }
+  if (del){ let armed=false; del.onclick = async ()=>{ if(!armed){ armed=true; del.textContent="Klik lagi untuk hapus (konten tetap ada)"; return; } await remove(d.id); if (dbRef) dbRef.collection("niches").doc(d.id).delete().catch(()=>{}); panel.hidden=true; toast("Akun dihapus"); render(); }; }
   prev();
   panel.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+}
+
+/* ---------- news feed ---------- */
+function nicheDoc(a){ return {accId:a.id, name:a.name||"", niche:a.niche||"", keywords:a.keywords||"", lang:a.lang||"Indonesia"}; }
+function syncNiche(a){
+  if (!dbRef || !a || a.example) return;
+  const want = nicheDoc(a), have = S.niches.get(a.id);
+  if (have && ["name","niche","keywords","lang"].every(k=>have[k]===want[k])) return;
+  S.niches.set(a.id, want);
+  dbRef.collection("niches").doc(a.id).set({...want, updatedAt:Date.now()}).catch(()=>{});
+}
+function ago(ms){
+  const m = Math.max(0, Math.round((Date.now()-ms)/60000));
+  if (m < 60) return m + " menit lalu";
+  const h = Math.round(m/60); if (h < 24) return h + " jam lalu";
+  return Math.round(h/24) + " hari lalu";
+}
+function feedItems(){
+  const accId = $("#pAcc").value;
+  return [...S.feed.values()].filter(d => S.feedTab==="trend" ? d.kind==="trend" : (d.kind==="news" && (d.accountIds||[]).includes(accId))).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0)).slice(0,60);
+}
+function renderFeed(){
+  const box = $("#feedList"); if (!box) return;
+  $$("#feedTabs button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.f===S.feedTab));
+  const last = Math.max(0, ...[...S.feed.values()].map(d=>d.fetchedAt||0));
+  $("#feedNote").textContent = !dbRef ? "Feed berita cuma tersedia saat app dibuka di claude.ai." : last ? `Terakhir diperbarui ${ago(last)}. Diambil otomatis tiap 4 jam dari Google News dan Google Trends.` : "Feed diambil otomatis tiap 4 jam dari Google News dan Google Trends.";
+  const items = feedItems();
+  if (!items.length){
+    const accId = $("#pAcc").value;
+    const pending = !last || (S.feedTab==="acc" && accId && ![...S.feed.values()].some(d=>(d.accountIds||[]).includes(accId)));
+    box.innerHTML = `<div class="empty"><h3>${S.feedTab==="trend"?"Belum ada data tren":"Belum ada berita buat akun ini"}</h3>${pending?"Berita buat akun baru muncul di putaran pengambilan berikutnya, paling lama 4 jam.":"Gak ada berita 48 jam terakhir yang cocok. Coba tambah kata kunci di profil akun."}</div>`;
+  } else {
+    box.innerHTML = items.map(d=>`
+      <label class="feeditem">
+        <input type="checkbox" data-id="${esc(d.id)}" ${S.feedSel.has(d.id)?"checked":""}>
+        <span class="ft">${esc(d.title)}${d.kind==="trend"&&d.traffic?` <span class="pill">${esc(d.traffic)} pencarian</span>`:""}</span>
+        <span class="fm">${d.source?`<span>${esc(d.source)}</span>`:""}<span>${esc(ago(d.publishedAt||d.fetchedAt))}</span>${d.keyword?`<span>· ${esc(d.keyword)}</span>`:""}${d.url&&d.kind==="news"?`<a href="${esc(d.url)}" target="_blank" rel="noopener">Buka</a>`:""}</span>
+        ${(d.related||[]).length?`<span class="fr">${(d.related||[]).slice(0,2).map(r=>esc(r.title)+(r.source?" ("+esc(r.source)+")":"")).join(" · ")}</span>`:""}
+      </label>`).join("");
+  }
+  const n = [...S.feedSel].filter(id=>S.feed.has(id)).length;
+  $("#btnUseFeed").disabled = !n; $("#btnUseFeed").textContent = n ? `Pakai sebagai bahan (${n})` : "Pakai sebagai bahan";
+}
+$("#feedTabs").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; S.feedTab=b.dataset.f; renderFeed(); };
+$("#feedList").addEventListener("change", e=>{ const id=e.target.dataset.id; if(!id) return; e.target.checked ? S.feedSel.add(id) : S.feedSel.delete(id); renderFeed(); });
+$("#btnUseFeed").onclick = ()=>{
+  const fmt = ms => { const d=new Date(ms); return d.toLocaleDateString("id-ID",{day:"numeric",month:"short"})+" "+fmtTime(d); };
+  const lines = [...S.feedSel].map(id=>S.feed.get(id)).filter(Boolean).map(d=>{
+    const t = d.kind==="trend" ? `- Lagi trending di pencarian Google Indonesia: "${d.title}" (${d.traffic||""} pencarian, ${fmt(d.publishedAt)})` : `- ${d.title} (${d.source||"sumber"}, ${fmt(d.publishedAt)})`;
+    const rel = (d.related||[]).slice(0,3).map(r=>`  · ${r.title}${r.source?" ("+r.source+")":""}`).join("\n");
+    return rel ? t + "\n" + rel : t;
+  });
+  const src = $("#pSrc"); src.value = (src.value.trim() ? src.value.trim()+"\n\n" : "") + "Judul berita (fakta yang boleh dipakai hanya yang tertulis di judul-judul ini):\n" + lines.join("\n");
+  S.feedSel.clear(); renderFeed(); src.focus(); toast(`${lines.length} berita masuk ke bahan`);
+};
+function watchShared(db){
+  dbRef = db;
+  db.collection("feed").onSnapshot(snap=>{ S.feed.clear(); snap.docs.forEach(doc=>{ const d=doc.data(); if(d) S.feed.set(doc.id,{...d,id:doc.id}); }); if (S.view==="produksi") renderFeed(); }, ()=>{});
+  let first = true;
+  db.collection("niches").onSnapshot(snap=>{
+    S.niches.clear(); snap.docs.forEach(doc=>{ const d=doc.data(); if(d) S.niches.set(doc.id,d); });
+    if (first){ first=false; setTimeout(()=>{ for (const a of S.accounts.values()) syncNiche(a); }, 1500); }
+    if (S.view==="produksi") renderFeed();
+  }, ()=>{});
 }
 
 /* ---------- boot ---------- */
@@ -1105,6 +1193,7 @@ async function boot(){
       const id = await user.id();
       col = db.collection("data/users/" + id);
       mode = "db";
+      watchShared(db);
       let first = true;
       const timer = setTimeout(()=>{ if (first){ const b=$("#globalBanner"); b.hidden=false; b.textContent="Data lama belum termuat. Periksa koneksi, lalu muat ulang halaman."; } }, 10000);
       col.onSnapshot(snap=>{

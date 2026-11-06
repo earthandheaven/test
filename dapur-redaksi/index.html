@@ -1,0 +1,1129 @@
+<title>Dapur Redaksi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=JetBrains+Mono:wght@500&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* Layout: newsroom control desk. Sticky masthead with stage tabs; each stage is one working surface. */
+:root{
+  --bg:#F3F5F8; --panel:#FFFFFF; --sunk:#E9EDF2; --ink:#12161D; --muted:#5B6472; --line:#DCE1E8;
+  --accent:#1F47FF; --accent-soft:#E4E9FF; --accent-ink:#FFFFFF;
+  --ok:#137A4B; --ok-soft:#DDF3E8; --warn:#9A5800; --warn-soft:#FCEBD3; --bad:#B42318; --bad-soft:#FBE1DE; --sched:#5B3FD1; --sched-soft:#ECE6FF;
+  --f-display:"Bricolage Grotesque","Archivo",system-ui,sans-serif;
+  --f-body:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1015; --panel:#151A21; --sunk:#1C222B; --ink:#E7EBF1; --muted:#97A1B0; --line:#262D38;
+  --accent:#7088FF; --accent-soft:#1E2752; --accent-ink:#0D1015;
+  --ok:#43C98C; --ok-soft:#12301F; --warn:#F0A94E; --warn-soft:#38270E; --bad:#F7766B; --bad-soft:#3A1714; --sched:#A68FFF; --sched-soft:#271F45;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1015; --panel:#151A21; --sunk:#1C222B; --ink:#E7EBF1; --muted:#97A1B0; --line:#262D38;
+  --accent:#7088FF; --accent-soft:#1E2752; --accent-ink:#0D1015;
+  --ok:#43C98C; --ok-soft:#12301F; --warn:#F0A94E; --warn-soft:#38270E; --bad:#F7766B; --bad-soft:#3A1714; --sched:#A68FFF; --sched-soft:#271F45;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.mast{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.mast .wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-block:12px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand span{font-size:12px;color:var(--muted)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;max-width:100%}
+nav.tabs a{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600;white-space:nowrap}
+nav.tabs a .n{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+nav.tabs a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+nav.tabs a[aria-current="page"] .n{color:var(--accent)}
+nav.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:24px 64px}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:-.015em;text-wrap:balance;margin:0}
+h1{font-size:28px;font-weight:800}
+h2{font-size:20px;font-weight:800}
+h3{font-size:16px;font-weight:600}
+.lede{color:var(--muted);max-width:62ch;margin:6px 0 0}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;min-width:0}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number],input[type=datetime-local],select,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:70px}
+input[type=color]{width:44px;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:2px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500}
+button,.btn{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.primary:hover{filter:brightness(1.08)}
+button.ok{background:var(--ok);border-color:var(--ok);color:var(--panel)}
+button.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+button.danger{color:var(--bad)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.sm{padding:6px 10px;font-size:13px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.draft{background:var(--warn-soft);color:var(--warn)}
+.pill.approved{background:var(--ok-soft);color:var(--ok)}
+.pill.rejected{background:var(--bad-soft);color:var(--bad)}
+.pill.scheduled{background:var(--sched-soft);color:var(--sched)}
+.pill.posted{background:var(--sunk);color:var(--muted)}
+.pill.example{background:var(--accent-soft);color:var(--accent)}
+.note{font-size:13px;color:var(--muted)}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:8px;background:var(--sunk);font-size:14px}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+
+/* Pipeline strip */
+.pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:18px}
+.pipe div{background:var(--panel);padding:12px 14px;min-width:0}
+.pipe b{display:block;font-size:13px}
+.pipe span{font-size:12px;color:var(--muted)}
+.pipe .k{font-family:var(--f-mono);font-size:11px;color:var(--accent)}
+@media (max-width:720px){.pipe{grid-template-columns:1fr 1fr}.pipe div:last-child{grid-column:1/-1}}
+
+/* Production */
+.prod{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;margin-top:20px;align-items:start}
+@media (max-width:900px){.prod{grid-template-columns:1fr}}
+.topic{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.topic:first-child{border-top:0}
+.topic input[type=checkbox]{margin-top:10px;width:18px;height:18px;accent-color:var(--accent)}
+.topic .t{display:flex;flex-direction:column;gap:6px;min-width:0}
+.topic .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.topic .why{font-size:13px;color:var(--muted)}
+.job{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.job:first-child{border-top:0}
+.job .st{font-family:var(--f-mono);font-size:12px;width:64px;flex:none}
+.job .st.ok{color:var(--ok)}.job .st.bad{color:var(--bad)}.job .st.run{color:var(--accent)}
+.job .tt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Review */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}
+.toolbar select{width:auto}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;border-radius:0;padding:7px 11px;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;text-align:left;padding:0;font-weight:400}
+.card:hover{border-color:var(--muted)}
+.card[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.card canvas{width:100%;aspect-ratio:4/5;display:block;background:var(--sunk)}
+.card .cb{padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card .cb .h{font-weight:600;font-size:14px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .cb .s{display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:12px;color:var(--muted);min-width:0}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.empty h3{color:var(--ink);margin-bottom:6px}
+
+/* Detail drawer */
+.drawer{position:fixed;inset:0;z-index:20;display:flex;justify-content:flex-end;background:color-mix(in srgb,var(--ink) 35%,transparent)}
+.drawer .sheet{width:min(1100px,100%);height:100%;background:var(--bg);overflow-y:auto;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.dhead{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
+.dhead .ttl{flex:1;min-width:0}
+.dbody{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.dbody{grid-template-columns:1fr}}
+.viewer{position:sticky;top:0}
+.viewer canvas{width:100%;max-width:100%;display:block;border-radius:8px;background:var(--sunk)}
+.viewer.tall canvas{aspect-ratio:9/16;max-width:360px;margin:0 auto}
+.viewer:not(.tall) canvas{aspect-ratio:4/5}
+.vnav{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
+.strip{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:4px}
+.strip canvas{width:56px;flex:none;border-radius:4px;cursor:pointer;border:2px solid transparent;aspect-ratio:4/5}
+.strip canvas[aria-current="true"]{border-color:var(--accent)}
+.slide-ed{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.slide-ed .no{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:10px}
+.slide-ed.on .no{color:var(--accent)}
+.capt{display:grid;gap:10px}
+.tabs-sm{display:flex;gap:4px;flex-wrap:wrap}
+.tabs-sm button{padding:6px 10px;font-size:13px}
+.tabs-sm button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.count{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right}
+.count.over{color:var(--bad)}
+.facts{font-size:13px;padding:10px 12px;border-radius:8px;background:var(--warn-soft);color:var(--warn)}
+
+/* Schedule */
+.day{margin-top:20px}
+.day h3{display:flex;gap:10px;align-items:baseline;margin-bottom:8px}
+.day h3 .mono{font-size:12px;color:var(--muted);font-weight:400}
+.slot{display:grid;grid-template-columns:62px 44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:6px}
+.slot canvas{width:44px;aspect-ratio:4/5;border-radius:4px;background:var(--sunk)}
+.slot .tm{font-family:var(--f-mono);font-size:14px}
+.slot .info{min-width:0}
+.slot .info .h{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot .info .p{font-size:12px;color:var(--muted)}
+@media (max-width:560px){.slot{grid-template-columns:52px 40px minmax(0,1fr)}.slot .acts{grid-column:1/-1}}
+
+/* Accounts */
+.accs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;margin-top:18px}
+.acc{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:start}
+.acc canvas{width:96px;aspect-ratio:4/5;border-radius:6px;background:var(--sunk)}
+.acc .h{font-weight:700}
+.acc .p{font-size:13px;color:var(--muted)}
+.acc-form{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:start}
+@media (max-width:820px){.acc-form{grid-template-columns:1fr}}
+.acc-form canvas{width:100%;max-width:260px;aspect-ratio:4/5;border-radius:8px;background:var(--sunk)}
+.swatches{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.presets button{padding:4px 6px}
+.presets i{display:block;width:34px;height:20px;border-radius:4px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;z-index:40;max-width:calc(100% - 32px)}
+.lightbox{position:fixed;inset:0;z-index:30;background:var(--bg);overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.lightbox .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:12px;margin-top:12px}
+.lightbox img{width:100%;border-radius:6px}
+@media (prefers-reduced-motion:no-preference){.card,.btn,button{transition:border-color .15s,filter .15s}}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="brand"><b>Dapur Redaksi</b><span id="modeNote">Mesin konten untuk homeless media</span></div>
+    <nav class="tabs" aria-label="Tahap">
+      <a href="#produksi" data-v="produksi">Produksi</a>
+      <a href="#review" data-v="review">Review <span class="n" id="nDraft">0</span></a>
+      <a href="#jadwal" data-v="jadwal">Jadwal <span class="n" id="nSched">0</span></a>
+      <a href="#akun" data-v="akun">Akun <span class="n" id="nAcc">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="globalBanner" class="banner warn" hidden></div>
+
+  <!-- PRODUKSI -->
+  <section id="v-produksi" data-view>
+    <h1>Produksi konten</h1>
+    <p class="lede">Claude cari topik, nulis isi slide plus caption tiap platform, terus desain carousel otomatis. Kamu tinggal cek, setujui, dan jadwalkan.</p>
+    <div class="pipe" aria-label="Alur kerja">
+      <div><span class="k">1</span><b>Cari topik</b><span>sesuai niche akun</span></div>
+      <div><span class="k">2</span><b>Tulis</b><span>slide, caption, hashtag</span></div>
+      <div><span class="k">3</span><b>Desain</b><span>carousel 4:5 dan 9:16</span></div>
+      <div><span class="k">4</span><b>Review</b><span>edit, setujui, tolak</span></div>
+      <div><span class="k">5</span><b>Jadwal</b><span>slot harian per akun</span></div>
+    </div>
+
+    <div class="prod">
+      <div class="panel stack">
+        <h2>Brief</h2>
+        <label class="f">Akun
+          <select id="pAcc"></select>
+        </label>
+        <div class="row" style="gap:12px">
+          <label class="f" style="flex:1">Jumlah konten
+            <input type="number" id="pN" min="1" max="15" value="5">
+          </label>
+          <label class="f" style="flex:1">Slide per carousel
+            <input type="number" id="pS" min="4" max="10" value="7">
+          </label>
+        </div>
+        <label class="f">Bahan atau berita terbaru <small>Opsional. Tempel judul berita, poin rilis, atau thread yang lagi rame. Claude gak bisa browsing, jadi untuk topik yang lagi tren, bahannya dari sini.</small>
+          <textarea id="pSrc" rows="6" placeholder="Contoh: BI tahan suku bunga 6% (rilis 5 Nov). Harga emas Antam naik Rp12.000/gram hari ini..."></textarea>
+        </label>
+        <label class="f">Arahan tambahan <small>Opsional</small>
+          <input type="text" id="pDir" placeholder="Contoh: fokus ke anak muda yang baru kerja">
+        </label>
+        <button class="primary" id="btnTopics">Cari topik</button>
+        <p class="note" id="aiNote"></p>
+      </div>
+
+      <div class="stack">
+        <div class="panel" id="topicPanel">
+          <div class="row" style="justify-content:space-between">
+            <h2>Topik</h2>
+            <div class="row" style="gap:8px">
+              <button class="sm ghost" id="btnAllTopics" hidden>Pilih semua</button>
+              <button class="primary" id="btnWrite" hidden>Tulis & desain</button>
+            </div>
+          </div>
+          <div id="topicList" style="margin-top:8px">
+            <div class="empty"><h3>Belum ada topik</h3>Isi brief di kiri, terus klik <b>Cari topik</b>. Kamu bisa edit judul dan angle sebelum ditulis.</div>
+          </div>
+        </div>
+        <div class="panel" id="jobPanel" hidden>
+          <div class="row" style="justify-content:space-between">
+            <h2>Sedang diproses</h2>
+            <div class="row" style="gap:8px">
+              <button class="sm" id="btnStop">Stop</button>
+              <a class="btn sm" href="#review" id="btnGoReview" hidden>Buka review</a>
+            </div>
+          </div>
+          <div id="jobList" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section id="v-review" data-view hidden>
+    <h1>Review</h1>
+    <p class="lede">Cek tiap carousel. Klik kartu buat edit teks, tulis ulang dengan arahan, setujui, atau unduh.</p>
+    <div class="toolbar">
+      <select id="rAcc" aria-label="Filter akun"></select>
+      <div class="seg" id="rStatus" role="group" aria-label="Filter status">
+        <button data-s="draft" aria-pressed="true">Draft</button>
+        <button data-s="approved" aria-pressed="false">Disetujui</button>
+        <button data-s="scheduled" aria-pressed="false">Terjadwal</button>
+        <button data-s="rejected" aria-pressed="false">Ditolak</button>
+        <button data-s="all" aria-pressed="false">Semua</button>
+      </div>
+      <span class="note" id="rCount"></span>
+      <button class="sm" id="btnApproveAll" style="margin-left:auto" hidden>Setujui semua draft</button>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- JADWAL -->
+  <section id="v-jadwal" data-view hidden>
+    <h1>Jadwal posting</h1>
+    <p class="lede">Konten yang udah disetujui diatur ke slot jam posting tiap akun. Posting ke platform masih manual: unduh gambarnya, salin caption, lalu tandai sudah diposting.</p>
+    <div class="toolbar">
+      <select id="jAcc" aria-label="Filter akun"></select>
+      <button class="primary" id="btnAutoSched">Isi slot otomatis</button>
+      <span class="note" id="jNote"></span>
+    </div>
+    <div id="days"></div>
+  </section>
+
+  <!-- AKUN -->
+  <section id="v-akun" data-view hidden>
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <h1>Akun media</h1>
+        <p class="lede">Satu profil per akun: niche, gaya bahasa, warna, template, dan jam posting. Semua konten ngikutin profil ini.</p>
+      </div>
+      <button class="primary" id="btnNewAcc">Tambah akun</button>
+    </div>
+    <div class="panel" id="accFormPanel" hidden style="margin-top:18px"></div>
+    <div class="accs" id="accs"></div>
+  </section>
+</main>
+
+<div class="drawer" id="drawer" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle"></div>
+</div>
+<div class="lightbox" id="lightbox" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+/* ---------- constants ---------- */
+const PLATFORMS = [
+  {id:"instagram", name:"Instagram", max:2200},
+  {id:"threads", name:"Threads", max:500},
+  {id:"tiktok", name:"TikTok", max:2200},
+  {id:"facebook", name:"Facebook", max:5000},
+  {id:"x", name:"X", max:280},
+];
+const TEMPLATES = [
+  {id:"tegas", name:"Tegas", note:"Judul besar, warna solid"},
+  {id:"berita", name:"Berita", note:"Gaya portal berita, serif"},
+  {id:"minimal", name:"Minimal", note:"Bersih, rata kiri"},
+];
+const PALETTES = [
+  {bg:"#0F1B3D", fg:"#FFFFFF", accent:"#FFC400"},
+  {bg:"#F2EFE6", fg:"#16181D", accent:"#E0261B"},
+  {bg:"#0B0B0B", fg:"#F5F5F5", accent:"#25D366"},
+  {bg:"#FFFFFF", fg:"#111111", accent:"#1F47FF"},
+  {bg:"#1E3A2F", fg:"#F4F1E8", accent:"#F2A93B"},
+  {bg:"#FFE14D", fg:"#121212", accent:"#121212"},
+];
+const STATUS = {draft:"Draft", approved:"Disetujui", scheduled:"Terjadwal", rejected:"Ditolak", posted:"Sudah posting"};
+const DEFAULT_SLOTS = "06:30, 07:30, 08:30, 09:30, 10:30, 11:30, 12:30, 13:30, 15:00, 16:00, 17:00, 18:30, 19:30, 20:30, 21:30";
+
+/* ---------- state ---------- */
+const S = {
+  accounts:new Map(), posts:new Map(),
+  view:"produksi", rStatus:"draft", rAcc:"", jAcc:"",
+  topics:[], jobs:[], ctls:[],
+  open:null, slide:0, capTab:"instagram", tall:false,
+  editingAcc:null,
+};
+let sample = null, downloads = null, col = null, mode = "local";
+
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const uid = p => p + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const toLocalInput = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const fmtDay = d => d.toLocaleDateString("id-ID",{weekday:"long", day:"numeric", month:"long"});
+const fmtTime = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const slug = s => String(s||"konten").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48) || "konten";
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2600); }
+function sampleErr(e){
+  const c = e && e.code;
+  if (c==="not_granted") return "Akses ke Claude belum diizinkan. Izinkan lewat menu Permissions artifact ini, lalu coba lagi.";
+  if (c==="rate_limited") return "Lagi kebanyakan permintaan. Tunggu sebentar, lalu coba lagi.";
+  if (c==="cancelled") return "Dihentikan.";
+  if (c==="invalid_json") return "Jawaban Claude gak kebaca formatnya. Coba lagi.";
+  if (c==="prompt_too_large") return "Bahannya kepanjangan. Potong sebagian, lalu coba lagi.";
+  return (e && e.message) ? "Gagal: " + e.message : "Gagal menghubungi Claude. Coba lagi.";
+}
+
+/* ---------- storage ---------- */
+const LS_KEY = "dapur-redaksi-local-v1";
+function lsLoad(){ try{ const o=JSON.parse(localStorage.getItem(LS_KEY)||"{}"); for(const [id,d] of Object.entries(o)) ingest(id,d); }catch(e){} }
+function lsSave(){ try{ const o={}; for(const [id,d] of S.accounts) o[id]=d; for(const [id,d] of S.posts) o[id]=d; localStorage.setItem(LS_KEY, JSON.stringify(o)); }catch(e){} }
+function ingest(id, d){ if(!d) return; if(d.kind==="account") S.accounts.set(id,d); else if(d.kind==="post") S.posts.set(id,d); }
+const queues = new Map();
+function save(id, data){
+  ingest(id, data);
+  if (mode === "local"){ lsSave(); return Promise.resolve(); }
+  const prev = queues.get(id) || Promise.resolve();
+  const next = prev.then(() => col.doc(id).set(data)).catch(e => { toast("Gagal menyimpan: " + (e.message||e.code)); });
+  queues.set(id, next);
+  return next;
+}
+function remove(id){
+  S.accounts.delete(id); S.posts.delete(id);
+  if (mode === "local"){ lsSave(); return Promise.resolve(); }
+  const prev = queues.get(id) || Promise.resolve();
+  const next = prev.then(() => col.doc(id).delete()).catch(e => toast("Gagal menghapus: " + (e.message||e.code)));
+  queues.set(id, next); return next;
+}
+const saveTimers = new Map();
+function saveSoon(id){ clearTimeout(saveTimers.get(id)); saveTimers.set(id, setTimeout(()=>{ const d=S.posts.get(id)||S.accounts.get(id); if(d) save(id,d); }, 700)); }
+
+/* ---------- canvas rendering ---------- */
+const W = 1080;
+function heightFor(tall){ return tall ? 1920 : 1350; }
+function hexLum(hex){ const h=hex.replace("#",""); const r=parseInt(h.slice(0,2),16)/255,g=parseInt(h.slice(2,4),16)/255,b=parseInt(h.slice(4,6),16)/255; return 0.2126*r+0.7152*g+0.0722*b; }
+function mix(hex, other, t){ const a=hex.replace("#",""), b=other.replace("#",""); const c=[0,2,4].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-t)+parseInt(b.slice(i,i+2),16)*t)); return "#"+c.map(x=>x.toString(16).padStart(2,"0")).join(""); }
+function wrapLines(ctx, text, maxW){
+  const out=[];
+  for (const para of String(text||"").split(/\n/)){
+    const words = para.split(/\s+/).filter(Boolean); let line="";
+    if(!words.length){ out.push(""); continue; }
+    for (const w of words){
+      const test = line ? line+" "+w : w;
+      if (ctx.measureText(test).width > maxW && line){ out.push(line); line=w; }
+      else line=test;
+    }
+    out.push(line);
+  }
+  return out;
+}
+function fit(ctx, text, fontFn, maxW, maxH, big, small, lh){
+  let size = big, lines;
+  for(; size>=small; size-=2){
+    ctx.font = fontFn(size); lines = wrapLines(ctx, text, maxW);
+    if (lines.length*size*lh <= maxH && lines.every(l=>ctx.measureText(l).width<=maxW)) return {size, lines};
+  }
+  ctx.font = fontFn(small); lines = wrapLines(ctx, text, maxW);
+  const maxLines = Math.max(1, Math.floor(maxH/(small*lh)));
+  if (lines.length>maxLines){ lines = lines.slice(0,maxLines); lines[maxLines-1] = lines[maxLines-1].replace(/\s*\S*$/,"")+"…"; }
+  return {size:small, lines};
+}
+function drawLines(ctx, lines, x, y, size, lh){ lines.forEach((l,i)=>ctx.fillText(l, x, y + i*size*lh)); return y + lines.length*size*lh; }
+function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function drawSlide(canvas, acc, post, i, scale, tall){
+  const H = heightFor(tall);
+  canvas.width = Math.round(W*scale); canvas.height = Math.round(H*scale);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(scale,0,0,scale,0,0);
+  const a = acc || {palette:PALETTES[0], template:"tegas", handle:"akun", name:"Akun"};
+  const pal = a.palette || PALETTES[0];
+  const slides = post.slides || [];
+  const s = slides[i] || {judul:"", isi:""};
+  const n = slides.length, isCover = i===0, isLast = i===n-1 && n>1;
+  const handle = "@" + String(a.handle||"akun").replace(/^@/,"");
+  const tpl = a.template || "tegas";
+  ctx.textBaseline = "top"; ctx.textAlign = "left";
+  const M = 88, top = tall ? 220 : 96, bottomY = H - (tall ? 260 : 96);
+
+  if (tpl === "berita"){
+    const paper = hexLum(pal.bg) > .5 ? pal.bg : "#F4F2EC";
+    const ink = hexLum(pal.bg) > .5 ? pal.fg : "#15171C";
+    ctx.fillStyle = paper; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = pal.accent; ctx.fillRect(0,0,W, tall?200:120);
+    ctx.fillStyle = hexLum(pal.accent) > .55 ? "#111" : "#fff";
+    ctx.font = `800 34px Archivo`; ctx.fillText(String(a.name||"").toUpperCase(), M, tall?120:44);
+    ctx.textAlign="right"; ctx.font = `700 28px Archivo`;
+    ctx.fillText(isCover ? (a.niche||"").toUpperCase().slice(0,24) : `${i+1}/${n}`, W-M, tall?124:48); ctx.textAlign="left";
+    let y = (tall?200:120) + 90;
+    ctx.fillStyle = ink;
+    if (isCover){
+      const h = fit(ctx, s.judul, z=>`800 ${z}px Fraunces`, W-2*M, (bottomY-y)*0.62, 116, 60, 1.08);
+      y = drawLines(ctx, h.lines, M, y, h.size, 1.08) + 40;
+      ctx.fillStyle = pal.accent; ctx.fillRect(M, y, 120, 8); y += 48;
+      ctx.fillStyle = mix(ink, paper, .25);
+      const b = fit(ctx, s.isi, z=>`500 ${z}px "Schibsted Grotesk"`, W-2*M, bottomY-y-60, 42, 28, 1.35);
+      drawLines(ctx, b.lines, M, y, b.size, 1.35);
+    } else {
+      const h = fit(ctx, s.judul, z=>`800 ${z}px Fraunces`, W-2*M, 330, 78, 46, 1.1);
+      y = drawLines(ctx, h.lines, M, y, h.size, 1.1) + 36;
+      ctx.strokeStyle = mix(ink, paper, .75); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(M,y); ctx.lineTo(W-M,y); ctx.stroke(); y += 40;
+      ctx.fillStyle = mix(ink, paper, .15);
+      const b = fit(ctx, s.isi, z=>`400 ${z}px "Schibsted Grotesk"`, W-2*M, bottomY-y-60, 46, 28, 1.42);
+      drawLines(ctx, b.lines, M, y, b.size, 1.42);
+    }
+    ctx.fillStyle = mix(ink, paper, .4); ctx.font = `600 28px "Schibsted Grotesk"`;
+    ctx.fillText(handle, M, bottomY);
+    ctx.textAlign="right"; ctx.fillText(isCover ? "Geser →" : (isLast ? "Simpan & bagikan" : "→"), W-M, bottomY); ctx.textAlign="left";
+    return;
+  }
+
+  if (tpl === "minimal"){
+    ctx.fillStyle = pal.bg; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = pal.fg;
+    ctx.font = `600 28px "Schibsted Grotesk"`; ctx.fillText(handle, M, top);
+    ctx.textAlign="right"; ctx.fillStyle = mix(pal.fg, pal.bg, .45); ctx.font = `500 26px "JetBrains Mono"`;
+    ctx.fillText(`${pad(i+1)} / ${pad(n)}`, W-M, top+2); ctx.textAlign="left";
+    ctx.fillStyle = pal.accent; ctx.fillRect(M, top+70, W-2*M, 3);
+    let y = top + 150;
+    ctx.fillStyle = pal.fg;
+    if (isCover){
+      const avail = bottomY - y - 80;
+      const h = fit(ctx, s.judul, z=>`700 ${z}px "Schibsted Grotesk"`, W-2*M, avail*0.66, 112, 58, 1.06);
+      y = drawLines(ctx, h.lines, M, y, h.size, 1.06) + 44;
+      ctx.fillStyle = mix(pal.fg, pal.bg, .3);
+      const b = fit(ctx, s.isi, z=>`400 ${z}px "Schibsted Grotesk"`, W-2*M, bottomY-y-60, 42, 28, 1.35);
+      drawLines(ctx, b.lines, M, y, b.size, 1.35);
+    } else {
+      const h = fit(ctx, s.judul, z=>`700 ${z}px "Schibsted Grotesk"`, W-2*M, 320, 76, 44, 1.1);
+      y = drawLines(ctx, h.lines, M, y, h.size, 1.1) + 40;
+      ctx.fillStyle = mix(pal.fg, pal.bg, .2);
+      const b = fit(ctx, s.isi, z=>`400 ${z}px "Schibsted Grotesk"`, W-2*M, bottomY-y-60, 46, 28, 1.45);
+      drawLines(ctx, b.lines, M, y, b.size, 1.45);
+    }
+    ctx.fillStyle = pal.accent; ctx.font = `700 30px "Schibsted Grotesk"`;
+    ctx.fillText(isCover ? "Geser →" : (isLast ? "Follow " + handle : ""), M, bottomY);
+    return;
+  }
+
+  // tegas
+  ctx.fillStyle = pal.bg; ctx.fillRect(0,0,W,H);
+  // handle chip
+  ctx.font = `700 28px Archivo`; const hw = ctx.measureText(handle).width + 44;
+  ctx.fillStyle = pal.accent; roundRect(ctx, M, top, hw, 56, 28); ctx.fill();
+  ctx.fillStyle = hexLum(pal.accent) > .55 ? "#111" : "#fff"; ctx.fillText(handle, M+22, top+13);
+  ctx.textAlign="right"; ctx.fillStyle = mix(pal.fg, pal.bg, .4); ctx.font = `700 28px Archivo`;
+  ctx.fillText(`${i+1}/${n}`, W-M, top+13); ctx.textAlign="left";
+  if (isCover){
+    const avail = bottomY - (top+120) - 60;
+    ctx.fillStyle = pal.fg;
+    const h = fit(ctx, String(s.judul||"").toUpperCase(), z=>`900 ${z}px Archivo`, W-2*M, avail*0.7, 136, 64, 1.0);
+    const sub = s.isi ? (()=>{ ctx.font=`500 40px "Schibsted Grotesk"`; return fit(ctx, s.isi, z=>`500 ${z}px "Schibsted Grotesk"`, W-2*M, avail*0.26, 42, 30, 1.3); })() : null;
+    const blockH = h.lines.length*h.size*1.0 + (sub ? 44 + sub.lines.length*sub.size*1.3 : 0);
+    let y = bottomY - 70 - blockH;
+    ctx.fillStyle = pal.fg; ctx.font = `900 ${h.size}px Archivo`;
+    y = drawLines(ctx, h.lines, M, y, h.size, 1.0);
+    if (sub){ y += 44; ctx.fillStyle = mix(pal.fg, pal.bg, .25); ctx.font = `500 ${sub.size}px "Schibsted Grotesk"`; drawLines(ctx, sub.lines, M, y, sub.size, 1.3); }
+    ctx.fillStyle = pal.accent; ctx.font = `800 30px Archivo`; ctx.fillText("GESER →", M, bottomY);
+  } else {
+    let y = top + 150;
+    ctx.fillStyle = pal.accent; ctx.font = `900 120px Archivo`; ctx.fillText(pad(i+1), M-6, y-10); y += 150;
+    ctx.fillStyle = pal.fg;
+    const h = fit(ctx, s.judul, z=>`800 ${z}px Archivo`, W-2*M, 300, 76, 44, 1.08);
+    y = drawLines(ctx, h.lines, M, y, h.size, 1.08) + 36;
+    ctx.fillStyle = mix(pal.fg, pal.bg, .2);
+    const b = fit(ctx, s.isi, z=>`500 ${z}px "Schibsted Grotesk"`, W-2*M, bottomY-y-60, 46, 28, 1.42);
+    drawLines(ctx, b.lines, M, y, b.size, 1.42);
+    if (isLast){ ctx.fillStyle = pal.accent; ctx.font = `800 30px Archivo`; ctx.fillText("FOLLOW " + handle.toUpperCase(), M, bottomY); }
+  }
+}
+let fontsReady = Promise.resolve();
+function loadFonts(){
+  if (!document.fonts || !document.fonts.load) return Promise.resolve();
+  const specs = ["900 40px Archivo","800 40px Archivo","700 40px Archivo","800 40px Fraunces",'400 40px "Schibsted Grotesk"','500 40px "Schibsted Grotesk"','600 40px "Schibsted Grotesk"','700 40px "Schibsted Grotesk"','500 20px "JetBrains Mono"'];
+  return Promise.all(specs.map(s=>document.fonts.load(s).catch(()=>{}))).then(()=>{});
+}
+
+/* ---------- Claude prompts ---------- */
+function accBrief(a){
+  return [
+    `Nama akun: ${a.name} (@${String(a.handle||"").replace(/^@/,"")})`,
+    `Niche: ${a.niche||"-"}`,
+    `Audiens: ${a.audience||"-"}`,
+    `Gaya bahasa: ${a.tone||"santai, jelas"}`,
+    `Bahasa: ${a.lang||"Indonesia"}`,
+    a.voice ? `Contoh tulisan akun ini (tiru suaranya, bukan isinya):\n${a.voice.slice(0,1500)}` : "",
+  ].filter(Boolean).join("\n");
+}
+function recentTitles(accId){
+  return [...S.posts.values()].filter(p=>p.accountId===accId).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,40).map(p=>"- "+(p.title||"")).join("\n");
+}
+function topicPrompt(a, n, src, dir){
+  return `Kamu redaktur senior untuk akun "homeless media" (media yang hidup di media sosial) di Indonesia.
+
+PROFIL AKUN
+${accBrief(a)}
+
+TUGAS
+Usulkan ${n} ide konten carousel yang punya peluang tinggi disimpan, dibagikan, dan dikomentari oleh audiens akun ini.
+${dir ? "Arahan redaksi: " + dir : ""}
+
+${src ? `BAHAN (pakai sebagai sumber utama; jangan menambah fakta, angka, atau kutipan yang tidak ada di bahan):\n"""\n${src.slice(0,12000)}\n"""` : `Tidak ada bahan berita. Kamu tidak punya akses internet, jadi JANGAN membuat berita, tanggal kejadian, angka terbaru, atau kutipan. Pilih topik evergreen: penjelasan, tips, mitos vs fakta, sejarah, studi kasus terkenal yang sudah mapan.`}
+
+Hindari topik yang mirip dengan yang sudah pernah dibuat:
+${recentTitles(a.id) || "(belum ada)"}
+
+Variasikan format: listicle, explainer, tips, mitos-fakta, kisah, perbandingan, data.
+
+Balas HANYA JSON array, contoh:
+[{"topik":"5 Kebiasaan Kecil yang Bikin Gaji Cepat Habis","angle":"Bongkar pengeluaran kecil yang gak kerasa","alasan":"Relate dengan pekerja baru, gampang disimpan","format":"listicle"}]`;
+}
+function writePrompt(a, t, nSlides, src){
+  return `Kamu penulis konten carousel untuk akun "homeless media" di Indonesia.
+
+PROFIL AKUN
+${accBrief(a)}
+
+TOPIK: ${t.topik}
+ANGLE: ${t.angle||"-"}
+FORMAT: ${t.format||"bebas"}
+${src ? `BAHAN (satu-satunya sumber fakta; jangan menambah fakta di luar ini):\n"""\n${src.slice(0,10000)}\n"""` : "Tanpa bahan berita: jangan mengarang angka, tanggal, atau kutipan spesifik. Kalau perlu data, tulis yang umum dan sudah mapan."}
+
+ATURAN SLIDE (total tepat ${nSlides} slide)
+- Slide 1 = cover. "judul" maksimal 9 kata, harus bikin penasaran (hook). "isi" = subjudul maksimal 14 kata.
+- Slide 2 sampai ${nSlides-1} = isi. "judul" maksimal 7 kata, "isi" 18-40 kata, satu gagasan per slide, kalimat pendek.
+- Slide ${nSlides} = penutup: kesimpulan singkat plus ajakan simpan/bagikan/komentar.
+- Jangan pakai emoji di slide. Jangan pakai tanda pisah panjang.
+
+CAPTION PER PLATFORM
+- instagram: 80-180 kata, paragraf pendek, akhiri dengan pertanyaan untuk komentar.
+- threads: maksimal 450 karakter, gaya ngobrol.
+- tiktok: maksimal 150 karakter, padat.
+- facebook: 60-150 kata, gaya bercerita.
+- x: maksimal 260 karakter termasuk hashtag.
+- Jangan masukkan hashtag ke caption kecuali x; hashtag ditaruh di field "hashtag".
+
+Balas HANYA JSON object:
+{"judul":"judul internal konten","slides":[{"judul":"...","isi":"..."}],"caption":{"instagram":"...","threads":"...","tiktok":"...","facebook":"...","x":"..."},"hashtag":["tanpa #", "..."],"cek_fakta":"klaim yang perlu dicek manusia sebelum posting, atau kosong"}`;
+}
+function rewritePrompt(a, post, instr){
+  const cur = {judul:post.title, slides:post.slides, caption:post.caption, hashtag:post.hashtags, cek_fakta:post.factCheck||""};
+  return `Kamu editor konten carousel untuk akun "homeless media" di Indonesia.
+
+PROFIL AKUN
+${accBrief(a)}
+
+KONTEN SAAT INI (JSON):
+${JSON.stringify(cur)}
+
+PERMINTAAN REVISI DARI EDITOR: ${instr}
+
+Revisi sesuai permintaan. Pertahankan jumlah slide kecuali diminta lain. Tetap tanpa emoji di slide, tanpa tanda pisah panjang, jangan menambah fakta baru yang tidak bisa diverifikasi.
+Balas HANYA JSON object dengan bentuk yang sama:
+{"judul":"...","slides":[{"judul":"...","isi":"..."}],"caption":{"instagram":"...","threads":"...","tiktok":"...","facebook":"...","x":"..."},"hashtag":["..."],"cek_fakta":"..."}`;
+}
+function normPost(j, nSlides){
+  if (!j || !Array.isArray(j.slides) || !j.slides.length) throw {code:"invalid_json", message:"slides kosong"};
+  const slides = j.slides.slice(0, Math.max(nSlides||j.slides.length, 3)).map(s=>({judul:String(s.judul||"").trim(), isi:String(s.isi||"").trim()}));
+  const cap = j.caption && typeof j.caption==="object" ? j.caption : {};
+  const caption = {}; for (const p of PLATFORMS) caption[p.id] = String(cap[p.id]||"").trim();
+  const hashtags = (Array.isArray(j.hashtag)?j.hashtag:[]).map(h=>String(h).replace(/^#/,"").replace(/\s+/g,"")).filter(Boolean).slice(0,15);
+  return {title:String(j.judul||slides[0].judul||"Tanpa judul").trim(), slides, caption, hashtags, factCheck:String(j.cek_fakta||"").trim()};
+}
+
+/* ---------- views ---------- */
+function setView(v){
+  if (!["produksi","review","jadwal","akun"].includes(v)) v = "produksi";
+  S.view = v;
+  $$("[data-view]").forEach(s=>s.hidden = s.id !== "v-"+v);
+  $$("nav.tabs a").forEach(a=>a.setAttribute("aria-current", a.dataset.v===v ? "page" : "false"));
+  render();
+}
+window.addEventListener("hashchange", ()=>setView(location.hash.slice(1)));
+
+function accOptions(sel, withAll, value){
+  const accs = [...S.accounts.values()].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  sel.innerHTML = (withAll?`<option value="">Semua akun</option>`:"") + accs.map(a=>`<option value="${esc(a.id)}">${esc(a.name)} (@${esc(String(a.handle).replace(/^@/,""))})</option>`).join("");
+  if (value && S.accounts.has(value)) sel.value = value;
+}
+function render(){
+  const posts = [...S.posts.values()];
+  $("#nDraft").textContent = posts.filter(p=>p.status==="draft").length;
+  $("#nSched").textContent = posts.filter(p=>p.status==="scheduled").length;
+  $("#nAcc").textContent = S.accounts.size;
+  if (S.view==="produksi") renderProd();
+  if (S.view==="review") renderReview();
+  if (S.view==="jadwal") renderSched();
+  if (S.view==="akun") renderAccs();
+}
+
+/* ---- produksi ---- */
+function renderProd(){
+  const sel = $("#pAcc"); const cur = sel.value;
+  accOptions(sel, false, cur);
+  const none = S.accounts.size===0;
+  $("#btnTopics").disabled = none || !sample;
+  $("#aiNote").innerHTML = none ? `Buat akun dulu di tab <a href="#akun">Akun</a>.` : (!sample ? "Claude belum tersambung di tampilan ini. Buka halaman ini di claude.ai untuk memakai fitur AI." : "Pertama kali dipakai, kamu akan diminta mengizinkan halaman ini memakai Claude dari akunmu.");
+}
+function renderTopics(){
+  const box = $("#topicList");
+  if (!S.topics.length){ box.innerHTML = `<div class="empty"><h3>Belum ada topik</h3>Isi brief di kiri, terus klik <b>Cari topik</b>. Kamu bisa edit judul dan angle sebelum ditulis.</div>`; $("#btnWrite").hidden = $("#btnAllTopics").hidden = true; return; }
+  box.innerHTML = S.topics.map((t,i)=>`
+    <div class="topic">
+      <input type="checkbox" id="tc${i}" data-i="${i}" ${t.on?"checked":""} aria-label="Pilih topik ${i+1}">
+      <div class="t">
+        <input type="text" id="tt${i}" data-i="${i}" data-f="topik" value="${esc(t.topik)}" aria-label="Judul topik">
+        <input type="text" id="ta${i}" data-i="${i}" data-f="angle" value="${esc(t.angle)}" aria-label="Angle" style="font-size:14px">
+        <div class="meta"><span class="pill">${esc(t.format||"bebas")}</span><span class="why">${esc(t.alasan||"")}</span></div>
+      </div>
+    </div>`).join("");
+  $("#btnWrite").hidden = $("#btnAllTopics").hidden = false;
+  updWriteBtn();
+}
+function updWriteBtn(){ const n = S.topics.filter(t=>t.on).length; $("#btnWrite").textContent = `Tulis & desain ${n} konten`; $("#btnWrite").disabled = !n || !!S.ctls.length; }
+$("#topicList").addEventListener("input", e=>{ const i=+e.target.dataset.i; if (isNaN(i)) return; if (e.target.type==="checkbox") S.topics[i].on = e.target.checked; else S.topics[i][e.target.dataset.f] = e.target.value; updWriteBtn(); });
+$("#topicList").addEventListener("change", e=>{ if (e.target.type==="checkbox"){ S.topics[+e.target.dataset.i].on = e.target.checked; updWriteBtn(); }});
+$("#btnAllTopics").onclick = ()=>{ const all = S.topics.every(t=>t.on); S.topics.forEach(t=>t.on=!all); renderTopics(); };
+
+$("#btnTopics").onclick = async ()=>{
+  const a = S.accounts.get($("#pAcc").value); if (!a || !sample) return;
+  const n = Math.min(15, Math.max(1, +$("#pN").value||5));
+  const btn = $("#btnTopics"); btn.disabled = true; btn.textContent = "Claude lagi mikir...";
+  $("#topicList").innerHTML = `<div class="empty"><h3>Mencari topik</h3>Biasanya 10 sampai 40 detik.</div>`;
+  try{
+    const arr = await sample.json(topicPrompt(a, n, $("#pSrc").value.trim(), $("#pDir").value.trim()), {cache:false});
+    if (!Array.isArray(arr) || !arr.length) throw {code:"invalid_json"};
+    S.topics = arr.slice(0,15).map(t=>({topik:String(t.topik||""), angle:String(t.angle||""), alasan:String(t.alasan||""), format:String(t.format||""), on:true})).filter(t=>t.topik);
+    renderTopics();
+  }catch(e){
+    $("#topicList").innerHTML = `<div class="banner bad">${esc(sampleErr(e))}</div>`;
+  }finally{ btn.disabled = false; btn.textContent = "Cari topik"; }
+};
+
+function renderJobs(){
+  $("#jobPanel").hidden = !S.jobs.length;
+  $("#jobList").innerHTML = S.jobs.map(j=>`<div class="job"><span class="st ${j.st==="selesai"?"ok":j.st==="gagal"?"bad":"run"}">${esc(j.st)}</span><span class="tt" title="${esc(j.err||"")}">${esc(j.topik)}${j.err?` <span class="note">(${esc(j.err)})</span>`:""}</span></div>`).join("");
+  const running = S.jobs.some(j=>j.st==="antri"||j.st==="nulis");
+  $("#btnStop").hidden = !running;
+  const done = S.jobs.filter(j=>j.st==="selesai").length;
+  $("#btnGoReview").hidden = !done; $("#btnGoReview").textContent = `Buka review (${done})`;
+}
+$("#btnWrite").onclick = async ()=>{
+  const a = S.accounts.get($("#pAcc").value); if (!a || !sample) return;
+  const nSlides = Math.min(10, Math.max(4, +$("#pS").value||7));
+  const src = $("#pSrc").value.trim();
+  const picked = S.topics.filter(t=>t.on);
+  S.jobs = picked.map(t=>({topik:t.topik, t, st:"antri"}));
+  S.ctls = []; renderJobs(); updWriteBtn();
+  let idx = 0;
+  const worker = async ()=>{
+    while (idx < S.jobs.length){
+      const j = S.jobs[idx++]; if (j.st!=="antri") continue;
+      j.st = "nulis"; renderJobs();
+      const ctl = new AbortController(); S.ctls.push(ctl);
+      try{
+        const res = await sample.json(writePrompt(a, j.t, nSlides, src), {signal:ctl.signal, cache:false});
+        const p = normPost(res, nSlides);
+        const id = uid("post");
+        await save(id, {kind:"post", id, accountId:a.id, topic:j.t.topik, angle:j.t.angle, ...p, status:"draft", scheduledAt:null, platforms:(a.platforms||PLATFORMS.map(x=>x.id)), createdAt:Date.now()});
+        j.st = "selesai";
+      }catch(e){ j.st = e && e.code==="cancelled" ? "stop" : "gagal"; j.err = e && e.code==="cancelled" ? "" : sampleErr(e); if (e && e.code==="not_granted"){ S.jobs.forEach(x=>{ if(x.st==="antri"){ x.st="stop"; } }); } }
+      renderJobs(); render();
+    }
+  };
+  await Promise.all([worker(), worker()]);
+  S.ctls = []; updWriteBtn(); renderJobs();
+  S.topics = S.topics.filter(t=>!t.on); renderTopics();
+  const ok = S.jobs.filter(j=>j.st==="selesai").length;
+  if (ok) toast(`${ok} konten siap direview`);
+};
+$("#btnStop").onclick = ()=>{ S.jobs.forEach(j=>{ if (j.st==="antri") j.st="stop"; }); S.ctls.forEach(c=>c.abort()); renderJobs(); };
+
+/* ---- review ---- */
+function filteredPosts(){
+  return [...S.posts.values()].filter(p=>(!S.rAcc || p.accountId===S.rAcc) && (S.rStatus==="all" || p.status===S.rStatus)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+}
+function renderReview(){
+  accOptions($("#rAcc"), true, S.rAcc); $("#rAcc").value = S.rAcc;
+  $$("#rStatus button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.s===S.rStatus));
+  const list = filteredPosts();
+  $("#rCount").textContent = `${list.length} konten`;
+  $("#btnApproveAll").hidden = !(S.rStatus==="draft" && list.length>1);
+  const box = $("#cards");
+  if (!list.length){
+    box.innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>${S.rStatus==="draft"?"Gak ada draft yang nunggu":"Kosong"}</h3>${S.posts.size?"Ganti filter di atas, atau buat konten baru di Produksi.":"Konten hasil Produksi akan muncul di sini."} <a href="#produksi">Ke Produksi</a></div>`;
+    return;
+  }
+  box.innerHTML = list.map(p=>{ const a=S.accounts.get(p.accountId); return `
+    <button class="card" data-id="${esc(p.id)}" aria-current="${S.open===p.id}">
+      <canvas data-thumb="${esc(p.id)}" width="270" height="338"></canvas>
+      <div class="cb"><div class="h">${esc(p.title)}</div>
+      <div class="s"><span>${esc(a?("@"+String(a.handle).replace(/^@/,"")):"akun dihapus")}</span>${p.example?`<span class="pill example">Contoh</span>`:`<span class="pill ${p.status}">${STATUS[p.status]||p.status}</span>`}</div></div>
+    </button>`; }).join("");
+  fontsReady.then(()=>$$("canvas[data-thumb]", box).forEach(c=>{ const p=S.posts.get(c.dataset.thumb); if(p) drawSlide(c, S.accounts.get(p.accountId), p, 0, .25, false); }));
+}
+$("#rAcc").onchange = e=>{ S.rAcc = e.target.value; renderReview(); };
+$("#rStatus").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; S.rStatus=b.dataset.s; renderReview(); };
+$("#cards").onclick = e=>{ const c=e.target.closest(".card"); if(c) openPost(c.dataset.id); };
+$("#btnApproveAll").onclick = async ()=>{ const list=filteredPosts(); for (const p of list){ p.status="approved"; await save(p.id,p); } toast(`${list.length} konten disetujui`); render(); };
+
+/* ---- detail ---- */
+function openPost(id){
+  const p = S.posts.get(id); if (!p) return;
+  S.open = id; S.slide = 0; S.capTab = "instagram";
+  $("#drawer").hidden = false; document.body.style.overflow = "hidden";
+  renderDetail();
+}
+function closePost(){ S.open = null; $("#drawer").hidden = true; document.body.style.overflow = ""; render(); }
+$("#drawer").addEventListener("click", e=>{ if (e.target.id==="drawer") closePost(); });
+document.addEventListener("keydown", e=>{ if (e.key==="Escape"){ if(!$("#lightbox").hidden){ $("#lightbox").hidden=true; return; } if(S.open) closePost(); } });
+
+function renderDetail(){
+  const p = S.posts.get(S.open); if (!p) return closePost();
+  const a = S.accounts.get(p.accountId);
+  const plats = PLATFORMS.filter(x=>(a?.platforms||PLATFORMS.map(y=>y.id)).includes(x.id));
+  if (!plats.find(x=>x.id===S.capTab)) S.capTab = plats[0]?.id || "instagram";
+  const when = p.scheduledAt ? new Date(p.scheduledAt) : nextFreeSlot(a, new Set());
+  $("#sheet").innerHTML = `
+    <div class="dhead">
+      <button class="sm" id="dClose">← Tutup</button>
+      <div class="ttl">
+        <div class="eyebrow">${esc(a?a.name:"Akun dihapus")} · ${esc(p.topic||"")}</div>
+        <h2 id="dTitle">${esc(p.title)}</h2>
+      </div>
+      <span class="pill ${p.status}" id="dStatus">${STATUS[p.status]||p.status}</span>
+    </div>
+    <div class="dbody">
+      <div class="viewer ${S.tall?"tall":""}">
+        <canvas id="dCanvas"></canvas>
+        <div class="vnav">
+          <button class="sm" id="dPrev" aria-label="Slide sebelumnya">←</button>
+          <span class="mono" id="dPos"></span>
+          <div class="seg" role="group" aria-label="Ukuran">
+            <button data-tall="0" aria-pressed="${!S.tall}">4:5</button><button data-tall="1" aria-pressed="${S.tall}">9:16</button>
+          </div>
+          <button class="sm" id="dNext" aria-label="Slide berikutnya">→</button>
+        </div>
+        <div class="strip" id="dStrip">${p.slides.map((_,i)=>`<canvas data-i="${i}" aria-current="${i===S.slide}"></canvas>`).join("")}</div>
+        <div class="row" style="margin-top:14px">
+          <button id="dZip">Unduh ZIP</button>
+          <button id="dShow">Lihat semua gambar</button>
+        </div>
+        <p class="note" id="dDlNote" style="margin-top:6px">ZIP berisi semua slide PNG plus caption tiap platform. 9:16 cocok buat TikTok photo mode dan story.</p>
+      </div>
+      <div class="stack">
+        <div class="panel stack">
+          <div class="row" style="justify-content:space-between"><h3>Keputusan</h3><span class="note">${p.factCheck?"":"Cek isi sebelum menyetujui"}</span></div>
+          ${p.factCheck?`<div class="facts"><b>Perlu dicek:</b> ${esc(p.factCheck)}</div>`:""}
+          <div class="row">
+            <button class="ok" id="dApprove">${p.status==="approved"||p.status==="scheduled"?"Disetujui":"Setujui"}</button>
+            <button class="danger" id="dReject">Tolak</button>
+            <button class="ghost danger" id="dDelete" style="margin-left:auto">Hapus</button>
+          </div>
+          <div class="row" style="align-items:flex-end">
+            <label class="f" style="flex:1;min-width:200px">Jadwal posting
+              <input type="datetime-local" id="dWhen" value="${toLocalInput(when)}">
+            </label>
+            <button class="primary" id="dSched">${p.status==="scheduled"?"Simpan jadwal":"Setujui & jadwalkan"}</button>
+          </div>
+          <div class="row" id="dPlats">${plats.map(x=>`<label class="chk"><input type="checkbox" value="${x.id}" ${(p.platforms||[]).includes(x.id)?"checked":""}> ${x.name}</label>`).join("")}</div>
+        </div>
+        <div class="panel stack">
+          <h3>Tulis ulang dengan Claude</h3>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="dInstr" placeholder="Contoh: hook lebih tajam, slide 3 terlalu panjang" style="flex:1">
+            <button id="dRewrite" ${sample?"":"disabled"}>Revisi</button>
+          </div>
+          <div class="row" style="gap:6px">${["Hook cover lebih bikin penasaran","Bahasa lebih santai","Lebih singkat per slide","Tambah 1 slide contoh nyata"].map(s=>`<button class="sm" data-quick="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+          <p class="note" id="dRwNote" hidden></p>
+        </div>
+        <div class="panel">
+          <h3>Isi slide</h3>
+          <div id="dSlides">${p.slides.map((s,i)=>`
+            <div class="slide-ed ${i===S.slide?"on":""}" data-i="${i}">
+              <span class="no">${pad(i+1)}</span>
+              <div class="stack" style="gap:8px">
+                <input type="text" id="sj${i}" data-i="${i}" data-f="judul" value="${esc(s.judul)}" aria-label="Judul slide ${i+1}">
+                <textarea id="si${i}" data-i="${i}" data-f="isi" rows="3" aria-label="Isi slide ${i+1}">${esc(s.isi)}</textarea>
+              </div>
+            </div>`).join("")}</div>
+        </div>
+        <div class="panel capt">
+          <div class="row" style="justify-content:space-between"><h3>Caption</h3><button class="sm" id="dCopy">Salin caption</button></div>
+          <div class="tabs-sm" id="dCapTabs">${plats.map(x=>`<button data-p="${x.id}" aria-pressed="${x.id===S.capTab}">${x.name}</button>`).join("")}</div>
+          <textarea id="dCap" rows="8" aria-label="Caption">${esc(p.caption?.[S.capTab]||"")}</textarea>
+          <div class="count" id="dCapCount"></div>
+          <label class="f">Hashtag <small>Pisahkan dengan spasi</small>
+            <input type="text" id="dTags" value="${esc((p.hashtags||[]).map(h=>"#"+h).join(" "))}">
+          </label>
+        </div>
+      </div>
+    </div>`;
+  bindDetail(p, a);
+  drawDetail();
+}
+function captionFor(p, pid){
+  const base = (p.caption?.[pid]||"").trim();
+  if (pid==="x") return base;
+  const tags = (p.hashtags||[]).map(h=>"#"+h).join(" ");
+  const limit = pid==="tiktok" ? 5 : pid==="threads" ? 1 : 30;
+  const t = (p.hashtags||[]).slice(0,limit).map(h=>"#"+h).join(" ");
+  return tags ? base + "\n\n" + t : base;
+}
+function updCapCount(p){
+  const max = PLATFORMS.find(x=>x.id===S.capTab)?.max||2200;
+  const len = captionFor(p, S.capTab).length;
+  const el = $("#dCapCount"); el.textContent = `${len} / ${max} karakter (termasuk hashtag)`; el.classList.toggle("over", len>max);
+}
+function drawDetail(){
+  const p = S.posts.get(S.open); if(!p) return; const a = S.accounts.get(p.accountId);
+  S.slide = Math.min(S.slide, p.slides.length-1);
+  fontsReady.then(()=>{
+    drawSlide($("#dCanvas"), a, p, S.slide, .5, S.tall);
+    $$("#dStrip canvas").forEach(c=>{ const i=+c.dataset.i; drawSlide(c, a, p, i, .06, false); c.setAttribute("aria-current", i===S.slide); });
+  });
+  $("#dPos").textContent = `${S.slide+1} / ${p.slides.length}`;
+  $$("#dSlides .slide-ed").forEach(el=>el.classList.toggle("on", +el.dataset.i===S.slide));
+}
+function bindDetail(p, a){
+  $("#dClose").onclick = closePost;
+  $("#dPrev").onclick = ()=>{ S.slide = (S.slide-1+p.slides.length)%p.slides.length; drawDetail(); };
+  $("#dNext").onclick = ()=>{ S.slide = (S.slide+1)%p.slides.length; drawDetail(); };
+  $("#dStrip").onclick = e=>{ const c=e.target.closest("canvas"); if(c){ S.slide=+c.dataset.i; drawDetail(); } };
+  $$(".viewer .seg button").forEach(b=>b.onclick = ()=>{ S.tall = b.dataset.tall==="1"; $(".viewer").classList.toggle("tall", S.tall); $$(".viewer .seg button").forEach(x=>x.setAttribute("aria-pressed", x===b)); drawDetail(); });
+  $("#dSlides").addEventListener("input", e=>{ const i=+e.target.dataset.i; if(isNaN(i)) return; p.slides[i][e.target.dataset.f] = e.target.value; S.slide=i; drawDetail(); saveSoon(p.id); });
+  $("#dSlides").addEventListener("focusin", e=>{ const i=+e.target.dataset.i; if(!isNaN(i) && i!==S.slide){ S.slide=i; drawDetail(); } });
+  $("#dCapTabs").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; S.capTab=b.dataset.p; $$("#dCapTabs button").forEach(x=>x.setAttribute("aria-pressed", x===b)); $("#dCap").value = p.caption?.[S.capTab]||""; updCapCount(p); };
+  $("#dCap").oninput = e=>{ p.caption = p.caption||{}; p.caption[S.capTab] = e.target.value; updCapCount(p); saveSoon(p.id); };
+  $("#dTags").oninput = e=>{ p.hashtags = e.target.value.split(/[\s,]+/).map(h=>h.replace(/^#/,"")).filter(Boolean).slice(0,30); updCapCount(p); saveSoon(p.id); };
+  updCapCount(p);
+  $("#dCopy").onclick = async ()=>{ const txt = captionFor(p, S.capTab); try{ await navigator.clipboard.writeText(txt); toast("Caption disalin"); }catch(e){ const t=$("#dCap"); t.focus(); t.select(); toast("Tekan Ctrl+C / Salin untuk menyalin"); } };
+  $("#dPlats").onchange = ()=>{ p.platforms = $$("#dPlats input:checked").map(i=>i.value); saveSoon(p.id); };
+  const setStatus = async (st, extra={})=>{ Object.assign(p, {status:st, example:false}, extra); await save(p.id, p); const pill=$("#dStatus"); pill.className="pill "+st; pill.textContent=STATUS[st]; };
+  $("#dApprove").onclick = async ()=>{ await setStatus("approved", {scheduledAt:null}); toast("Disetujui"); nextDraftOrClose(); };
+  $("#dReject").onclick = async ()=>{ await setStatus("rejected", {scheduledAt:null}); toast("Ditolak"); nextDraftOrClose(); };
+  let delArmed = false;
+  $("#dDelete").onclick = async e=>{ if(!delArmed){ delArmed=true; e.target.textContent="Yakin hapus?"; setTimeout(()=>{ delArmed=false; if(e.target.isConnected) e.target.textContent="Hapus"; }, 3000); return; } await remove(p.id); toast("Konten dihapus"); closePost(); };
+  $("#dSched").onclick = async ()=>{ const v=$("#dWhen").value; if(!v){ toast("Pilih tanggal dan jam dulu"); return; } await setStatus("scheduled", {scheduledAt:new Date(v).getTime(), platforms:$$("#dPlats input:checked").map(i=>i.value)}); toast("Masuk jadwal " + fmtDay(new Date(v)) + " " + fmtTime(new Date(v))); renderDetail(); };
+  $$("[data-quick]").forEach(b=>b.onclick = ()=>{ $("#dInstr").value = b.dataset.quick; $("#dRewrite").click(); });
+  $("#dRewrite").onclick = async ()=>{
+    const instr = $("#dInstr").value.trim(); if(!instr || !sample) return;
+    const btn=$("#dRewrite"), note=$("#dRwNote"); btn.disabled = true; note.hidden=false; note.textContent = "Claude lagi merevisi, biasanya 15 sampai 40 detik...";
+    try{
+      const r = normPost(await sample.json(rewritePrompt(a||{}, p, instr), {cache:false}));
+      Object.assign(p, r); await save(p.id, p); note.textContent = "Revisi selesai."; renderDetail();
+    }catch(e){ note.textContent = sampleErr(e); btn.disabled = false; }
+  };
+  $("#dZip").onclick = ()=>downloadZip(p, a);
+  $("#dShow").onclick = ()=>showImages(p, a);
+}
+function nextDraftOrClose(){
+  const next = [...S.posts.values()].filter(x=>x.status==="draft" && x.id!==S.open && (!S.rAcc || x.accountId===S.rAcc)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))[0];
+  if (next) openPost(next.id); else closePost();
+}
+async function renderPngs(p, a, tall){
+  await fontsReady;
+  const out = [];
+  for (let i=0;i<p.slides.length;i++){
+    const c = document.createElement("canvas"); drawSlide(c, a, p, i, 1, tall);
+    out.push(await new Promise(r=>c.toBlob(r, "image/png")));
+  }
+  return out;
+}
+async function downloadZip(p, a){
+  const note = $("#dDlNote");
+  if (!downloads || !window.JSZip){ note.textContent = "Unduhan gak tersedia di tampilan ini. Pakai \"Lihat semua gambar\" lalu simpan gambarnya satu per satu."; return; }
+  note.textContent = "Menyiapkan ZIP...";
+  try{
+    const zip = new JSZip(); const base = slug(p.title);
+    const pngs = await renderPngs(p, a, S.tall);
+    pngs.forEach((b,i)=>zip.file(`${base}-${pad(i+1)}.png`, b));
+    const caps = PLATFORMS.map(x=>`=== ${x.name.toUpperCase()} ===\n${captionFor(p,x.id)}\n`).join("\n");
+    zip.file(`${base}-caption.txt`, `${p.title}\n\n${caps}`);
+    const blob = await zip.generateAsync({type:"blob"});
+    await downloads.save({filename:`${base}${S.tall?"-9x16":""}.zip`, data:blob});
+    note.textContent = "ZIP tersimpan.";
+  }catch(e){ note.textContent = e && e.code==="declined" ? "Unduhan dibatalkan." : "Gagal mengunduh: " + (e.message||e.code||e); }
+}
+async function showImages(p, a){
+  const lb = $("#lightbox"); lb.hidden = false;
+  lb.innerHTML = `<div class="row" style="justify-content:space-between"><h2>${esc(p.title)}</h2><button id="lbClose">Tutup</button></div><p class="note">Tekan lama (HP) atau klik kanan (komputer) di gambar untuk menyimpan.</p><div class="imgs">Merender...</div>`;
+  $("#lbClose").onclick = ()=>{ lb.hidden = true; lb.innerHTML=""; };
+  const pngs = await renderPngs(p, a, S.tall);
+  $(".imgs", lb).innerHTML = "";
+  pngs.forEach((b,i)=>{ const img = new Image(); img.alt = `Slide ${i+1}`; img.src = URL.createObjectURL(b); $(".imgs", lb).append(img); });
+}
+
+/* ---- schedule ---- */
+function parseSlots(a){ return String(a?.slots||DEFAULT_SLOTS).split(/[,\s]+/).map(s=>s.trim()).filter(s=>/^\d{1,2}[:.]\d{2}$/.test(s)).map(s=>s.replace(".",":")).sort(); }
+function nextFreeSlot(a, taken){
+  const slots = parseSlots(a); const now = new Date();
+  const used = new Set([...S.posts.values()].filter(p=>p.status==="scheduled" && p.accountId===a?.id && p.scheduledAt).map(p=>p.scheduledAt));
+  for (let d=0; d<60; d++){
+    for (const s of slots){
+      const [h,m] = s.split(":").map(Number);
+      const t = new Date(now.getFullYear(), now.getMonth(), now.getDate()+d, h, m, 0, 0);
+      if (t <= now) continue;
+      const k = t.getTime(); if (used.has(k) || taken.has(k)) continue;
+      return t;
+    }
+  }
+  const t = new Date(now.getTime()+3600e3); t.setMinutes(0,0,0); return t;
+}
+function renderSched(){
+  accOptions($("#jAcc"), true, S.jAcc); $("#jAcc").value = S.jAcc;
+  const inAcc = p => !S.jAcc || p.accountId===S.jAcc;
+  const waiting = [...S.posts.values()].filter(p=>p.status==="approved" && inAcc(p));
+  $("#btnAutoSched").disabled = !waiting.length;
+  $("#jNote").textContent = waiting.length ? `${waiting.length} konten disetujui belum dijadwalkan` : "Semua konten yang disetujui sudah terjadwal";
+  const sched = [...S.posts.values()].filter(p=>(p.status==="scheduled"||p.status==="posted") && p.scheduledAt && inAcc(p)).sort((a,b)=>a.scheduledAt-b.scheduledAt);
+  const startToday = new Date(); startToday.setHours(0,0,0,0);
+  const groups = new Map();
+  for (const p of sched){ if (p.status==="posted" && p.scheduledAt < startToday.getTime()) continue; const d=new Date(p.scheduledAt); const k=d.toDateString(); if(!groups.has(k)) groups.set(k,{d,items:[]}); groups.get(k).items.push(p); }
+  const box = $("#days");
+  if (!groups.size){ box.innerHTML = `<div class="empty" style="margin-top:20px"><h3>Jadwal masih kosong</h3>Setujui konten di <a href="#review">Review</a>, lalu klik <b>Isi slot otomatis</b> atau atur jamnya satu per satu.</div>`; return; }
+  box.innerHTML = [...groups.values()].map(g=>{
+    const perAcc = {}; g.items.forEach(p=>perAcc[p.accountId]=(perAcc[p.accountId]||0)+1);
+    const quota = Object.entries(perAcc).map(([id,n])=>{ const a=S.accounts.get(id); return `${a?"@"+String(a.handle).replace(/^@/,""):"?"} ${n}/${parseSlots(a).length}`; }).join(" · ");
+    return `<div class="day"><h3>${esc(fmtDay(g.d))} <span class="mono">${esc(quota)}</span></h3>
+    ${g.items.map(p=>{ const a=S.accounts.get(p.accountId); const d=new Date(p.scheduledAt); const late = p.status==="scheduled" && d < new Date(); return `
+      <div class="slot">
+        <span class="tm" style="${late?"color:var(--bad)":""}">${fmtTime(d)}</span>
+        <canvas data-thumb="${esc(p.id)}"></canvas>
+        <div class="info"><div class="h">${esc(p.title)}</div><div class="p">${esc(a?"@"+String(a.handle).replace(/^@/,""):"")} · ${esc((p.platforms||[]).map(id=>PLATFORMS.find(x=>x.id===id)?.name||id).join(", "))}${late?" · lewat jadwal":""}</div></div>
+        <div class="acts row" style="gap:6px">
+          <button class="sm" data-open="${esc(p.id)}">Buka</button>
+          ${p.status==="posted"?`<span class="pill posted">Sudah posting</span>`:`<button class="sm" data-posted="${esc(p.id)}">Tandai sudah posting</button>`}
+        </div>
+      </div>`; }).join("")}</div>`; }).join("");
+  fontsReady.then(()=>$$("canvas[data-thumb]", box).forEach(c=>{ const p=S.posts.get(c.dataset.thumb); if(p) drawSlide(c, S.accounts.get(p.accountId), p, 0, .08, false); }));
+}
+$("#jAcc").onchange = e=>{ S.jAcc = e.target.value; renderSched(); };
+$("#days").onclick = async e=>{
+  const o = e.target.closest("[data-open]"); if (o) return openPost(o.dataset.open);
+  const d = e.target.closest("[data-posted]"); if (d){ const p=S.posts.get(d.dataset.posted); p.status="posted"; await save(p.id,p); toast("Ditandai sudah posting"); renderSched(); }
+};
+$("#btnAutoSched").onclick = async ()=>{
+  const waiting = [...S.posts.values()].filter(p=>p.status==="approved" && (!S.jAcc || p.accountId===S.jAcc)).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  const taken = new Map();
+  for (const p of waiting){
+    const a = S.accounts.get(p.accountId);
+    if (!taken.has(p.accountId)) taken.set(p.accountId, new Set());
+    const t = nextFreeSlot(a, taken.get(p.accountId)); taken.get(p.accountId).add(t.getTime());
+    p.status = "scheduled"; p.scheduledAt = t.getTime(); p.example = false;
+    await save(p.id, p);
+  }
+  toast(`${waiting.length} konten masuk jadwal`); renderSched(); render();
+};
+
+/* ---- accounts ---- */
+function renderAccs(){
+  const box = $("#accs");
+  const accs = [...S.accounts.values()].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  if (!accs.length){ box.innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>Belum ada akun</h3>Klik <b>Tambah akun</b>, isi niche dan gaya bahasanya. Satu akun bisa niche apa aja: berita lokal, finansial, bola, kuliner, teknologi.</div>`; return; }
+  box.innerHTML = accs.map(a=>{ const posts=[...S.posts.values()].filter(p=>p.accountId===a.id); return `
+    <div class="panel acc">
+      <canvas data-acc="${esc(a.id)}"></canvas>
+      <div class="stack" style="gap:6px;min-width:0">
+        <div class="row" style="gap:8px"><span class="h">${esc(a.name)}</span>${a.example?`<span class="pill example">Contoh</span>`:""}</div>
+        <div class="p">@${esc(String(a.handle).replace(/^@/,""))} · ${esc(a.niche)}</div>
+        <div class="p">${posts.filter(p=>p.status==="draft").length} draft · ${posts.filter(p=>p.status==="scheduled").length} terjadwal · ${parseSlots(a).length} slot/hari</div>
+        <div class="row" style="gap:6px;margin-top:4px"><button class="sm" data-edit="${esc(a.id)}">Edit</button><a class="btn sm" href="#produksi" data-make="${esc(a.id)}">Buat konten</a></div>
+      </div>
+    </div>`; }).join("");
+  const demo = {slides:[{judul:"Contoh judul cover yang bikin penasaran", isi:"Subjudul singkat buat ngejelasin isinya"}, {judul:"",isi:""}]};
+  fontsReady.then(()=>$$("canvas[data-acc]", box).forEach(c=>drawSlide(c, S.accounts.get(c.dataset.acc), demo, 0, .1, false)));
+}
+$("#accs").onclick = e=>{
+  const ed = e.target.closest("[data-edit]"); if (ed) return accForm(S.accounts.get(ed.dataset.edit));
+  const mk = e.target.closest("[data-make]"); if (mk){ setTimeout(()=>{ $("#pAcc").value = mk.dataset.make; }, 0); }
+};
+$("#btnNewAcc").onclick = ()=>accForm(null);
+function accForm(a){
+  const isNew = !a;
+  const d = a ? JSON.parse(JSON.stringify(a)) : {kind:"account", id:uid("acc"), name:"", handle:"", niche:"", audience:"", tone:"santai, jelas, gak lebay", lang:"Indonesia", template:"tegas", palette:{...PALETTES[0]}, platforms:PLATFORMS.map(x=>x.id), slots:DEFAULT_SLOTS, voice:"", createdAt:Date.now()};
+  S.editingAcc = d;
+  const panel = $("#accFormPanel"); panel.hidden = false;
+  panel.innerHTML = `
+    <div class="row" style="justify-content:space-between;margin-bottom:14px"><h2>${isNew?"Akun baru":"Edit akun"}</h2><button class="ghost" id="afCancel">Batal</button></div>
+    <div class="acc-form">
+      <div class="stack">
+        <div class="grid2">
+          <label class="f">Nama media<input type="text" id="afName" value="${esc(d.name)}" placeholder="Kabar Duit"></label>
+          <label class="f">Username<input type="text" id="afHandle" value="${esc(d.handle)}" placeholder="kabarduit"></label>
+          <label class="f">Niche<input type="text" id="afNiche" value="${esc(d.niche)}" placeholder="Finansial pribadi"></label>
+          <label class="f">Audiens<input type="text" id="afAud" value="${esc(d.audience)}" placeholder="Pekerja 20-30 tahun di kota besar"></label>
+          <label class="f">Gaya bahasa<input type="text" id="afTone" value="${esc(d.tone)}"></label>
+          <label class="f">Bahasa<select id="afLang">${["Indonesia","Indonesia gaul (lo/gue)","Indonesia formal","English","Jawa campur Indonesia"].map(l=>`<option ${l===d.lang?"selected":""}>${l}</option>`).join("")}</select></label>
+        </div>
+        <label class="f">Contoh tulisan akun <small>Opsional. Tempel 1-3 caption lama biar Claude niru suaranya.</small><textarea id="afVoice" rows="3">${esc(d.voice)}</textarea></label>
+        <div class="f" style="font-size:13px;font-weight:600">Template
+          <div class="seg" id="afTpl" role="group" aria-label="Template">${TEMPLATES.map(t=>`<button type="button" data-t="${t.id}" aria-pressed="${t.id===d.template}" title="${esc(t.note)}">${t.name}</button>`).join("")}</div>
+        </div>
+        <div class="f" style="font-size:13px;font-weight:600">Warna
+          <div class="presets" id="afPresets">${PALETTES.map((p,i)=>`<button type="button" data-p="${i}" aria-label="Palet ${i+1}"><i style="background:linear-gradient(90deg,${p.bg} 0 60%,${p.accent} 60% 100%)"></i></button>`).join("")}</div>
+          <div class="swatches">
+            <label class="chk"><input type="color" id="afBg" value="${d.palette.bg}"> Latar</label>
+            <label class="chk"><input type="color" id="afFg" value="${d.palette.fg}"> Teks</label>
+            <label class="chk"><input type="color" id="afAc" value="${d.palette.accent}"> Aksen</label>
+          </div>
+        </div>
+        <div class="f" style="font-size:13px;font-weight:600">Platform
+          <div class="row" id="afPlats">${PLATFORMS.map(x=>`<label class="chk"><input type="checkbox" value="${x.id}" ${d.platforms.includes(x.id)?"checked":""}> ${x.name}</label>`).join("")}</div>
+        </div>
+        <label class="f">Jam posting harian <small>Pisahkan dengan koma. Jumlah jam = target konten per hari.</small><input type="text" id="afSlots" value="${esc(d.slots)}"></label>
+        <div class="row">
+          <button class="primary" id="afSave">${isNew?"Simpan akun":"Simpan perubahan"}</button>
+          ${isNew?"":`<button class="ghost danger" id="afDel">Hapus akun</button>`}
+          <span class="note" id="afMsg"></span>
+        </div>
+      </div>
+      <div><div class="eyebrow" style="margin-bottom:8px">Pratinjau cover</div><canvas id="afPrev"></canvas></div>
+    </div>`;
+  const prev = ()=>{ const demo = {slides:[{judul: d.niche ? `Hal yang jarang dibahas soal ${d.niche.toLowerCase()}` : "Contoh judul cover yang bikin penasaran", isi:"Subjudul singkat buat ngejelasin isinya"},{judul:"",isi:""},{judul:"",isi:""}]}; fontsReady.then(()=>drawSlide($("#afPrev"), d, demo, 0, .3, false)); };
+  const read = ()=>{ d.name=$("#afName").value.trim(); d.handle=$("#afHandle").value.trim().replace(/^@/,""); d.niche=$("#afNiche").value.trim(); d.audience=$("#afAud").value.trim(); d.tone=$("#afTone").value.trim(); d.lang=$("#afLang").value; d.voice=$("#afVoice").value; d.palette={bg:$("#afBg").value, fg:$("#afFg").value, accent:$("#afAc").value}; d.platforms=$$("#afPlats input:checked").map(i=>i.value); d.slots=$("#afSlots").value; };
+  panel.oninput = ()=>{ read(); prev(); };
+  $("#afTpl").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; d.template=b.dataset.t; $$("#afTpl button").forEach(x=>x.setAttribute("aria-pressed", x===b)); prev(); };
+  $("#afPresets").onclick = e=>{ const b=e.target.closest("button"); if(!b) return; const p=PALETTES[+b.dataset.p]; $("#afBg").value=p.bg; $("#afFg").value=p.fg; $("#afAc").value=p.accent; read(); prev(); };
+  $("#afCancel").onclick = ()=>{ panel.hidden = true; S.editingAcc = null; };
+  $("#afSave").onclick = async ()=>{
+    read();
+    if (!d.name || !d.handle || !d.niche){ $("#afMsg").textContent = "Nama, username, dan niche wajib diisi."; return; }
+    if (!d.platforms.length){ $("#afMsg").textContent = "Pilih minimal satu platform."; return; }
+    d.example = false;
+    await save(d.id, d); panel.hidden = true; S.editingAcc = null; toast(isNew?"Akun dibuat":"Akun disimpan"); render();
+  };
+  const del = $("#afDel");
+  if (del){ let armed=false; del.onclick = async ()=>{ if(!armed){ armed=true; del.textContent="Klik lagi untuk hapus (konten tetap ada)"; return; } await remove(d.id); panel.hidden=true; toast("Akun dihapus"); render(); }; }
+  prev();
+  panel.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+}
+
+/* ---------- boot ---------- */
+async function boot(){
+  fontsReady = loadFonts();
+  setView(location.hash.slice(1) || "produksi");
+  const C = window.claude;
+  const [db, user, smp, dl] = C && C.use ? await Promise.all(["db","user","sample","downloads"].map(n=>C.use(n).catch(()=>null))) : [null,null,null,null];
+  sample = smp; downloads = dl;
+  if (db && user){
+    try{
+      const id = await user.id();
+      col = db.collection("data/users/" + id);
+      mode = "db";
+      let first = true;
+      const timer = setTimeout(()=>{ if (first){ const b=$("#globalBanner"); b.hidden=false; b.textContent="Data lama belum termuat. Periksa koneksi, lalu muat ulang halaman."; } }, 10000);
+      col.onSnapshot(snap=>{
+        clearTimeout(timer); $("#globalBanner").hidden = true;
+        const keep = S.open ? S.posts.get(S.open) : null;
+        S.accounts.clear(); S.posts.clear();
+        snap.docs.forEach(doc=>{ const d = doc.data(); if (d) ingest(doc.id, {...d, id:doc.id}); });
+        if (keep && S.posts.has(keep.id)) S.posts.set(keep.id, keep);
+        first = false;
+        render();
+        if (S.open && !S.posts.has(S.open)) closePost();
+      }, err=>{ clearTimeout(timer); const b=$("#globalBanner"); b.hidden=false; b.textContent="Gagal memuat data: " + (err.message||err.code) + ". Muat ulang halaman."; });
+    }catch(e){ mode = "local"; lsLoad(); }
+  } else {
+    mode = "local"; lsLoad();
+    $("#modeNote").textContent = "Mode lokal: data cuma tersimpan di browser ini";
+  }
+  render();
+}
+boot();
+})();
+</script>
